@@ -45,7 +45,6 @@ module.exports = {
                 { name: '**Players Online**', value: `\`\`\`${result.players.online}\`\`\`` },
                 { name: '**Max Player Cap**', value: `\`\`\`${result.players.max}\`\`\`` },
                 { name: '**Server Version**', value: `\`\`\`${result.version.name_clean}\`\`\`` },
-                { name: '**Players Online**', value: `\`\`\`${result.players.online}\`\`\`` },
                 { name: '**Online Mode**', value: `\`\`\`${result.online}\`\`\`` },
                 { name: '**Is The Eula Blocked ?**', value: `\`\`\`${result.eula_blocked}\`\`\`` },
                 { name: '**Mods, [ ] = No Mods**', value: `\`\`\`[${result.mods}]\`\`\`` },
