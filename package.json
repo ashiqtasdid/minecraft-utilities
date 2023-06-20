@@ -2,6 +2,7 @@
   "dependencies": {
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
+    "minecraft-data": "^3.36.1",
     "node-mcstatus": "^1.1.0"
   },
   "devDependencies": {
