@@ -35,6 +35,34 @@ module.exports = {
                 { name: 'Tradeable?', value: `\`\`\`${trade}\`\`\`` },
               );
             interaction.editReply({
+              components : [
+                {
+                  'type': 1,
+                  'components': [
+                    {
+                      'style': 5,
+                      'label': 'Vote',
+                      'url': 'https://top.gg/bot/810192936472936480/vote',
+                      'disabled': false,
+                      'type': 2,
+                    },
+                    {
+                      'style': 5,
+                      'label': 'Website',
+                      'url': 'https://spectex.xyz/projects/minecraft-utilities',
+                      'disabled': false,
+                      'type': 2,
+                    },
+                    {
+                      'style': 1,
+                      'label': 'Help',
+                      'custom_id': 'row_0_button_2',
+                      'disabled': false,
+                      'type': 2,
+                    },
+                  ],
+                },
+              ],
               embeds: [exampleEmbed],
               ephemeral: true,
             });

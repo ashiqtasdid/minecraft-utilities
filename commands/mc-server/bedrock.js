@@ -50,6 +50,34 @@ module.exports = {
                 { name: '**Motd**', value: `\`\`\`${result.motd.clean.trim()}\`\`\`` },
             );
             interaction.editReply({
+                components : [
+                    {
+                      'type': 1,
+                      'components': [
+                        {
+                          'style': 5,
+                          'label': 'Vote',
+                          'url': 'https://top.gg/bot/810192936472936480/vote',
+                          'disabled': false,
+                          'type': 2,
+                        },
+                        {
+                          'style': 5,
+                          'label': 'Website',
+                          'url': 'https://spectex.xyz/projects/minecraft-utilities',
+                          'disabled': false,
+                          'type': 2,
+                        },
+                        {
+                          'style': 1,
+                          'label': 'Help',
+                          'custom_id': 'row_0_button_2',
+                          'disabled': false,
+                          'type': 2,
+                        },
+                      ],
+                    },
+                  ],
                 embeds: [bedrockEmbed],
             });
             return;
