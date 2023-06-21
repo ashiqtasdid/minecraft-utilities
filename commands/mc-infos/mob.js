@@ -53,9 +53,9 @@ module.exports = {
                   'type': 2,
                 },
                 {
-                  'style': 1,
-                  'label': 'Help',
-                  'custom_id': 'row_0_button_2',
+                  'style': 5,
+                  'label': 'Support Server',
+                  'url': 'https://discord.gg/jf28jcFJk9',
                   'disabled': false,
                   'type': 2,
                 },
@@ -67,7 +67,52 @@ module.exports = {
         });
       } catch (error) {
         interaction.editReply({
-          content: 'There has been an error, Please Try Again',
+          components: [
+            {
+              'type': 1,
+              'components': [
+                {
+                  'style': 5,
+                  'label': 'Vote',
+                  'url': 'https://top.gg/bot/810192936472936480/vote',
+                  'disabled': false,
+                  'type': 2,
+                },
+                {
+                  'style': 5,
+                  'label': 'Website',
+                  'url': 'https://spectex.xyz/projects/minecraft-utilities',
+                  'disabled': false,
+                  'type': 2,
+                },
+                {
+                  'style': 5,
+                  'label': 'Support Server',
+                  'url': 'https://discord.gg/jf28jcFJk9',
+                  'disabled': false,
+                  'type': 2,
+                },
+              ],
+            },
+          ],
+          embeds: [
+            {
+              'type': 'rich',
+              'title': 'Minecraft Utilities',
+              'description': '**There has been an error**',
+              'color': 0xa92626,
+              'fields': [
+                {
+                  'name': 'Make sure to check the following things',
+                  'value': '\`\`\` 1. The name of the Requested Mob.\n Replace any space with an underscore (_).\neg: ender_dragon, villager, iron_golem\`\`\`\n\`\`\` 3. Make sure to use the right command.\nuse /mob to get info about a Minecraft Mob\`\`\`\n\n**Here are the reasons why you might be having trouble**\n\`\`\` 1. Your Requested Mob is not in the game\`\`\`\n\`\`\` 2. Your Provided Name might be Incorrect\`\`\`\n\`\`\` 3. There are some issues with the bot, \nin that case, please use /help\`\`\`', // eslint-disable-line
+                },
+                {
+                  'name': 'Here is the error code',
+                  'value': `\`\`\`${error}\`\`\``,
+                },
+              ],
+            },
+          ],
           ephemeral: true,
         });
       }
