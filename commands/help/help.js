@@ -27,7 +27,12 @@ module.exports = {
     const row = new ActionRowBuilder()
       .addComponents(menu);
 
-    await interaction.reply({ content: 'Select a category from below to get help', components: [row], ephemeral: true });
+    try {
+      await interaction.reply({ content: 'Select a category from below to get help', components: [row], ephemeral: true });
+    } catch (error) {
+      console.error('[WARNING][DO NOT REPORT][NOT AN ERROR][FROM HELP.JS] Error replying to interaction:', error);
+      return;
+    }
 
     const filter = (i) => i.customId === 'help' && i.user.id === interaction.user.id;
 
@@ -91,7 +96,7 @@ module.exports = {
               },
               {
                 name: 'Email',
-                value: 'support@spectex.xyz', // eslint-disable-line no-useless-escape
+                value: 'support@spectex.xyz',
               },
             ],
             timestamp: new Date(),
@@ -99,7 +104,7 @@ module.exports = {
           await i.update({ embeds: [contactEmbed], components: [], ephemeral: true });
         }
       } catch (error) {
-        console.error('Error at HELP');
+        console.error('[WARNING][DO NOT REPORT][NOT AN ERROR][FROM HELP.JS] Error replying to interaction');
       }
     });
 
@@ -108,7 +113,7 @@ module.exports = {
         try {
           await interaction.followUp({ content: 'You did not select any options in time.', components: [], ephemeral: true });
         } catch (error) {
-          console.error('Error sending follow-up message:');
+          console.error('Error sending follow-up message:', error);
         }
       }
     });
