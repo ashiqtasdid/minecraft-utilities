@@ -117,6 +117,10 @@ module.exports = {
         }
         })
         .catch((error) => {
+          interaction.editReply({
+            content: 'There has been an error',
+            ephemeral: true,
+          });
           console.log(error);
         });
 	},
