@@ -83,7 +83,7 @@ module.exports = {
             return;
         })
         .catch((error) => {
-            console.log(error);
+            console.log('There has been an error');
             interaction.editReply({
               components: [
                 {
