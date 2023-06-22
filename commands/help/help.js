@@ -55,6 +55,10 @@ module.exports = {
                 value: 'https://spectex.xyz/projects/minecraft-utilities',
               },
               {
+                name: 'Twitter',
+                value: 'https://twitter.com/mc_utilities',
+              },
+              {
                 name: 'Vote',
                 value: 'https://top.gg/bot/810192936472936480/vote',
               },
@@ -97,6 +101,10 @@ module.exports = {
               {
                 name: 'Email',
                 value: 'support@spectex.xyz',
+              },
+              {
+                name: 'Twitter',
+                value: 'https://twitter.com/mc_utilities',
               },
             ],
             timestamp: new Date(),
