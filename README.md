@@ -3,9 +3,9 @@
 
 A feature-rich bot for Minecraft tools & utilities.  Easily, get real-time information about a Minecraft Server, Player Skin, UUID & much more! 
 
-[![Discord Bots](https://top.gg/api/widget/status/810192936472936480.svg)(https://top.gg/bot/810192936472936480)
-[![Discord Bots](https://top.gg/api/widget/servers/810192936472936480.svg)(https://top.gg/bot/810192936472936480)
-[![Discord Bots](https://top.gg/api/widget/owner/810192936472936480.svg)(https://top.gg/bot/810192936472936480)
+[![Discord Bots](https://top.gg/api/widget/status/810192936472936480.svg)](https://top.gg/bot/810192936472936480)
+[![Discord Bots](https://top.gg/api/widget/servers/810192936472936480.svg)](https://top.gg/bot/810192936472936480)
+[![Discord Bots](https://top.gg/api/widget/owner/810192936472936480.svg)](https://top.gg/bot/810192936472936480)
 
 ## Used By
 
