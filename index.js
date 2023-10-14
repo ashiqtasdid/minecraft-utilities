@@ -48,4 +48,13 @@ for (const file of eventFiles) {
 }
 
 
+// TOP.GG Auto Post
+const { AutoPoster } = require('topgg-autoposter')
+
+const ap = AutoPoster(process.env.TOP_GG_TOKEN, client)
+
+ap.on('posted', () => {
+  console.log('Posted stats to Top.gg!')
+})
+
 client.login(process.env.BOT_TOKEN);
