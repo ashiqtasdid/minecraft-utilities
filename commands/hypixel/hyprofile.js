@@ -25,43 +25,56 @@ module.exports = {
       );
 
       const uuidData = await mc.nameToUuid(username);
+      const uuid = uuidData.uuid;
+      const onlineStatus = await axios.get(
+        `https://api.hypixel.net/status?key=${apiKey}&uuid=${uuid}`
+      );
 
       if (!uuidData || !uuidData.uuid) {
         throw new Error("UUID not found");
       }
 
-      const uuid = uuidData.uuid;
-
       // Fetch full body image
       const bodyImageUrl = `https://api.mineatar.io/body/full/${uuid}`;
-      console.log('[UUID]:', uuid); // Debug: Log the UUID
-      console.log('[Username]:', username); // Debug: Log the UUID
-      console.log('bodyImageUrl:', bodyImageUrl); // Debug: Log the image URL
+      console.log("[UUID]:", uuid); // Debug: Log the UUID
+      console.log("[Username]:", username); // Debug: Log the UUID
+      console.log("bodyImageUrl:", bodyImageUrl); // Debug: Log the image URL
 
       if (response.data.success) {
         const playerData = response.data.player;
-
+        const onlineStatusData = onlineStatus.data.session.online;
         // Extract the relevant data from the API response
         const uuid = playerData.uuid;
         const displayName = playerData.displayname;
         const firstLogin = new Date(playerData.firstLogin).toLocaleString();
         const lastLogin = new Date(playerData.lastLogin).toLocaleString();
-        const userLanguage = playerData.userLanguage;
-        const skyblockProfiles = Object.values(
+        const userLanguage = playerData.userLanguage || 'Default [English]';
+        const skyblockProfiles = (Object.values(
           playerData.stats.SkyBlock.profiles
-        ).map((profile) => profile.cute_name);
+        ).map((profile) => profile.cute_name)) || 'None';
         const achievementPoints = playerData.achievementPoints;
         const karma = playerData.karma;
-        const socialMediaLinks = playerData.socialMedia.links;
+        const socialMediaLinks = playerData.socialMedia?.links || 'None';
         const hypixelLevel = playerData.leveling.claimedRewards.length;
-        const rank = playerData.newPackageRank;
-        const currentPet = playerData.currentPet;
-        const mostRecentGameType = playerData.mostRecentGameType;
-        // Extract other data you need here
+        let rank = playerData.newPackageRank || 'Default';
+        let currentPet = playerData.currentPet || 'None';
+        const mostRecentGameType = playerData.mostRecentGameType || 'Not found';
+        const online = onlineStatusData;
+
+          if (rank !== 'Default') {
+            modifiedRank = rank.replace(/_/g, ' ');
+            rank = modifiedRank.charAt(0).toUpperCase() + modifiedRank.slice(1);
+
+          }
+          if (currentPet !== 'None') {
+            modifiedPet = currentPet.replace(/_/g, ' ');
+            currentPet = modifiedPet.charAt(0).toUpperCase() + modifiedPet.slice(1);
+          }
+
 
         // Create an embed to display the player's profile
         const embed = new EmbedBuilder()
-          .setColor(0xFFEA4E)
+          .setColor(0xffea4e)
           .setTitle("Minecraft Utilities")
           .setURL("https://spectex.xyz/")
           .setThumbnail(bodyImageUrl) // Set the body image as the thumbnail
@@ -69,6 +82,10 @@ module.exports = {
             `**Here is the requested Hypixel player profile**\n\n**Username:** \`${displayName}\`\n**UUID:** \`${uuid}\``
           )
           .addFields(
+            {
+              name: "**Online**",
+              value: `\`\`\`${online}\`\`\``,
+            },
             {
               name: "**First Login**",
               value: `\`\`\`${firstLogin}\`\`\``,
@@ -119,51 +136,8 @@ module.exports = {
           )
           .setFooter({ text: "Hypixel Player Profile" });
 
-        interaction.editReply({ 
-            components: [
-                {
-                  type: 1,
-                  components: [
-                    {
-                      style: 5,
-                      label: "Vote",
-                      url: "https://top.gg/bot/810192936472936480/vote",
-                      disabled: false,
-                      type: 2,
-                    },
-                    {
-                      style: 5,
-                      label: "Website",
-                      url: "https://spectex.xyz/projects/minecraft-utilities",
-                      disabled: false,
-                      type: 2,
-                    },
-                    {
-                      style: 5,
-                      label: "Support Server",
-                      url: "https://discord.gg/jf28jcFJk9",
-                      disabled: false,
-                      type: 2,
-                    },
-                    {
-                      style: 5,
-                      label: "Documentation",
-                      url: "https://mcutils.spectex.xyz",
-                      disabled: false,
-                      type: 2,
-                    },
-                  ],
-                },
-              ],
-              embeds: [embed],
-         });
-      } else {
-        interaction.editReply("Player not found.");
-      }
-    } catch (error) {
-      console.error(error);
-      interaction.editReply({
-        components: [
+        interaction.editReply({
+          components: [
             {
               type: 1,
               components: [
@@ -198,21 +172,64 @@ module.exports = {
               ],
             },
           ],
-          embeds: [
-            {
-              type: "rich",
-              title: "Minecraft Utilities",
-              description: "**There has been an error**",
-              color: 0xa92626,
-              fields: [
-                {
-                  name: "Error Details",
-                  value: `\`\`\`${error}\`\`\``,
-                },
-              ],
-            },
-          ],
+          embeds: [embed],
         });
+      } else {
+        interaction.editReply("Player not found.");
+      }
+    } catch (error) {
+      console.error(error);
+      interaction.editReply({
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                style: 5,
+                label: "Vote",
+                url: "https://top.gg/bot/810192936472936480/vote",
+                disabled: false,
+                type: 2,
+              },
+              {
+                style: 5,
+                label: "Website",
+                url: "https://spectex.xyz/projects/minecraft-utilities",
+                disabled: false,
+                type: 2,
+              },
+              {
+                style: 5,
+                label: "Support Server",
+                url: "https://discord.gg/jf28jcFJk9",
+                disabled: false,
+                type: 2,
+              },
+              {
+                style: 5,
+                label: "Documentation",
+                url: "https://mcutils.spectex.xyz",
+                disabled: false,
+                type: 2,
+              },
+            ],
+          },
+        ],
+        embeds: [
+          {
+            type: "rich",
+            title: "Minecraft Utilities",
+            description: "**There has been an error**",
+            color: 0xa92626,
+            fields: [
+              {
+                name: "Error Details",
+                value: `\`\`\`${error}\`\`\``,
+              },
+            ],
+          },
+        ],
+      });
     }
   },
 };
