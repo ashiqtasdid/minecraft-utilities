@@ -2,6 +2,9 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const axios = require("axios");
 const mc = require("minecraft_head");
 
+const playerProfileCache = {};
+
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("hyprofile")
@@ -17,7 +20,16 @@ module.exports = {
     await interaction.deferReply({ ephemeral: true });
 
     const username = interaction.options.getString("username");
-    const apiKey = process.env.HYPIXEL_API; // Replace with your Hypixel API key
+    const apiKey = process.env.HYPIXEL_API;
+
+      // Check if the player profile is in the cache
+      if (playerProfileCache[username] && Date.now() < playerProfileCache[username].timestamp) {
+        const cachedProfile = playerProfileCache[username].embed;
+        interaction.editReply({
+          embeds: [cachedProfile],
+        });
+        return;
+      }
 
     try {
       const response = await axios.get(
@@ -47,7 +59,7 @@ module.exports = {
         const uuid = playerData.uuid;
         const displayName = playerData.displayname;
         const firstLogin = new Date(playerData.firstLogin).toLocaleString();
-        const lastLogin = new Date(playerData.lastLogin).toLocaleString();
+        const lastLogin = new Date(playerData.lastLogin).toLocaleString() || 'Not found';
         const userLanguage = playerData.userLanguage || 'Default [English]';
         const skyblockProfiles = (Object.values(
           playerData.stats.SkyBlock.profiles
@@ -135,6 +147,11 @@ module.exports = {
             `https://crafatar.com/renders/body/${uuid}?overlay=true`
           )
           .setFooter({ text: "Hypixel Player Profile" });
+
+        playerProfileCache[username] = {
+          embed, // The profile embed
+          timestamp: Date.now() + 2 * 60 * 1000, // 2 minutes expiration time
+        };
 
         interaction.editReply({
           components: [
