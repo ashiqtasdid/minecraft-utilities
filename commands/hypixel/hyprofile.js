@@ -21,6 +21,15 @@ module.exports = {
     const username = interaction.options.getString("username");
     const apiKey = process.env.HYPIXEL_API;
 
+    if (
+      playerProfileCache[username] &&
+      playerProfileCache[username].timestamp > Date.now() - 120000
+    ) {
+      const cachedData = playerProfileCache[username].data;
+      interaction.editReply(cachedData);
+      return;
+    }
+
     try {
       const response = await axios.get(
         `https://api.hypixel.net/player?key=${apiKey}&name=${username}`
@@ -78,7 +87,7 @@ module.exports = {
         const gamesPlayed =
           playerData.stats.SkyWars.games_played_skywars || "Not found";
         const level = playerData.stats.SkyWars.levelFormatted || "Not found";
-        const winStreak = playerData.stats.SkyWars.win_streak || "Not found";
+        const winStreak = playerData.stats.SkyWars.win_streak || "0";
 
         // Bedwars [Stats]
         const bedwarsLevel =
@@ -90,7 +99,7 @@ module.exports = {
         const bwkills = playerData.stats.Bedwars.kills_bedwars || "Not found";
         const bwlosses = playerData.stats.Bedwars.losses_bedwars || "Not found";
         const bwwins = playerData.stats.Bedwars.wins_bedwars || "Not found";
-        const bwwinstreak = playerData.stats.Bedwars.winstreak || "Not found";
+        const bwwinstreak = playerData.stats.Bedwars.winstreak || "0";
 
         if (rank !== "Default") {
           modifiedRank = rank.replace(/_/g, " ");
@@ -175,50 +184,56 @@ module.exports = {
             `https://crafatar.com/renders/body/${uuid}?overlay=true`
           )
           .setFooter({ text: "Hypixel Player Profile - Minecraft Utilities" });
+        // Cache the data for 2 minutes
+        playerProfileCache[username] = {
+          timestamp: Date.now(),
+          data: {
+            components: [
+              {
+                type: 1,
+                components: [
+                  {
+                    style: 5,
+                    label: "Vote",
+                    url: "https://top.gg/bot/810192936472936480/vote",
+                    disabled: false,
+                    type: 2,
+                  },
+                  {
+                    style: 5,
+                    label: "Website",
+                    url: "https://spectex.xyz/projects/minecraft-utilities",
+                    disabled: false,
+                    type: 2,
+                  },
+                  {
+                    style: 5,
+                    label: "Support Server",
+                    url: "https://discord.gg/jf28jcFJk9",
+                    disabled: false,
+                    type: 2,
+                  },
+                  {
+                    style: 5,
+                    label: "Documentation",
+                    url: "https://mcutils.spectex.xyz",
+                    disabled: false,
+                    type: 2,
+                  },
+                ],
+              },
+            ],
+            embeds: [embed],
+          },
+        };
 
-        interaction.editReply({
-          components: [
-            {
-              type: 1,
-              components: [
-                {
-                  style: 5,
-                  label: "Vote",
-                  url: "https://top.gg/bot/810192936472936480/vote",
-                  disabled: false,
-                  type: 2,
-                },
-                {
-                  style: 5,
-                  label: "Website",
-                  url: "https://spectex.xyz/projects/minecraft-utilities",
-                  disabled: false,
-                  type: 2,
-                },
-                {
-                  style: 5,
-                  label: "Support Server",
-                  url: "https://discord.gg/jf28jcFJk9",
-                  disabled: false,
-                  type: 2,
-                },
-                {
-                  style: 5,
-                  label: "Documentation",
-                  url: "https://mcutils.spectex.xyz",
-                  disabled: false,
-                  type: 2,
-                },
-              ],
-            },
-          ],
-          embeds: [embed],
-        });
+        interaction.editReply(playerProfileCache[username].data);
       } else {
-        interaction.editReply("Player not found.");
+        throw new Error("Player not found.");
       }
     } catch (error) {
       console.error(error);
+
       interaction.editReply({
         components: [
           {
@@ -263,6 +278,10 @@ module.exports = {
             color: 0xa92626,
             fields: [
               {
+                name: "**Possible Reasons**",
+                value: `\`\`\`The player does not exist or the API is down\`\`\``,
+              },
+              {
                 name: "Error Details",
                 value: `\`\`\`${error}\`\`\``,
               },
@@ -273,6 +292,7 @@ module.exports = {
     }
   },
 };
+
 function formatSocialMediaLinks(links) {
   let formattedLinks = "";
   for (const platform in links) {
