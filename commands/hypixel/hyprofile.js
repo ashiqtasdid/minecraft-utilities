@@ -4,7 +4,6 @@ const mc = require("minecraft_head");
 
 const playerProfileCache = {};
 
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("hyprofile")
@@ -21,15 +20,6 @@ module.exports = {
 
     const username = interaction.options.getString("username");
     const apiKey = process.env.HYPIXEL_API;
-
-      // Check if the player profile is in the cache
-      if (playerProfileCache[username] && Date.now() < playerProfileCache[username].timestamp) {
-        const cachedProfile = playerProfileCache[username].embed;
-        interaction.editReply({
-          embeds: [cachedProfile],
-        });
-        return;
-      }
 
     try {
       const response = await axios.get(
@@ -58,31 +48,59 @@ module.exports = {
         // Extract the relevant data from the API response
         const uuid = playerData.uuid;
         const displayName = playerData.displayname;
+        const achievementUnlocked = playerData.achievementsOneTime.length;
         const firstLogin = new Date(playerData.firstLogin).toLocaleString();
-        const lastLogin = new Date(playerData.lastLogin).toLocaleString() || 'Not found';
-        const userLanguage = playerData.userLanguage || 'Default [English]';
-        const skyblockProfiles = (Object.values(
-          playerData.stats.SkyBlock.profiles
-        ).map((profile) => profile.cute_name)) || 'None';
+        const lastLogin =
+          new Date(playerData.lastLogin).toLocaleString() || "Not found";
+        const userLanguage = playerData.userLanguage || "Default [English]";
+        const skyblockProfiles =
+          Object.values(playerData.stats.SkyBlock.profiles).map(
+            (profile) => profile.cute_name
+          ) || "None";
         const achievementPoints = playerData.achievementPoints;
         const karma = playerData.karma;
-        const socialMediaLinks = playerData.socialMedia?.links || 'None';
-        const hypixelLevel = playerData.leveling.claimedRewards.length;
-        let rank = playerData.newPackageRank || 'Default';
-        let currentPet = playerData.currentPet || 'None';
-        const mostRecentGameType = playerData.mostRecentGameType || 'Not found';
+        const socialMediaLinks = playerData.socialMedia?.links || "None";
+        // const hypixelLevel = playerData.leveling.claimedRewards.length;
+        let rank = playerData.newPackageRank || "Default";
+        let currentPet = playerData.currentPet || "None";
+        const mostRecentGameType = playerData.mostRecentGameType || "Not found";
         const online = onlineStatusData;
+        const lastLogout =
+          new Date(playerData.lastLogout).toLocaleString() || "Not found";
 
-          if (rank !== 'Default') {
-            modifiedRank = rank.replace(/_/g, ' ');
-            rank = modifiedRank.charAt(0).toUpperCase() + modifiedRank.slice(1);
+        // Skywars [Stats]
+        const souls = playerData.stats.SkyWars.souls || "Not found";
+        const coins = playerData.stats.SkyWars.coins || "Not found";
+        const kills = playerData.stats.SkyWars.kills || "Not found";
+        const deaths = playerData.stats.SkyWars.deaths || "Not found";
+        const wins = playerData.stats.SkyWars.wins || "Not found";
+        const losses = playerData.stats.SkyWars.losses || "Not found";
+        const gamesPlayed =
+          playerData.stats.SkyWars.games_played_skywars || "Not found";
+        const level = playerData.stats.SkyWars.levelFormatted || "Not found";
+        const winStreak = playerData.stats.SkyWars.win_streak || "Not found";
 
-          }
-          if (currentPet !== 'None') {
-            modifiedPet = currentPet.replace(/_/g, ' ');
-            currentPet = modifiedPet.charAt(0).toUpperCase() + modifiedPet.slice(1);
-          }
+        // Bedwars [Stats]
+        const bedwarsLevel =
+          playerData.achievements.bedwars_level || "Not found";
+        const bedwarsCoins = playerData.stats.Bedwars.coins || "Not found";
+        const bwgamesPlayed =
+          playerData.stats.Bedwars.games_played_bedwars || "Not found";
+        const bwdeath = playerData.stats.Bedwars.deaths_bedwars || "Not found";
+        const bwkills = playerData.stats.Bedwars.kills_bedwars || "Not found";
+        const bwlosses = playerData.stats.Bedwars.losses_bedwars || "Not found";
+        const bwwins = playerData.stats.Bedwars.wins_bedwars || "Not found";
+        const bwwinstreak = playerData.stats.Bedwars.winstreak || "Not found";
 
+        if (rank !== "Default") {
+          modifiedRank = rank.replace(/_/g, " ");
+          rank = modifiedRank.charAt(0).toUpperCase() + modifiedRank.slice(1);
+        }
+        if (currentPet !== "None") {
+          modifiedPet = currentPet.replace(/_/g, " ");
+          currentPet =
+            modifiedPet.charAt(0).toUpperCase() + modifiedPet.slice(1);
+        }
 
         // Create an embed to display the player's profile
         const embed = new EmbedBuilder()
@@ -95,63 +113,68 @@ module.exports = {
           )
           .addFields(
             {
-              name: "**Online**",
-              value: `\`\`\`${online}\`\`\``,
+              name: "**Info**",
+              value: `
+              Online: \`${online}\`
+              Rank: \`${rank}\`
+              Karma: \`${karma}\`
+              Achievement Unlocked: \`${achievementUnlocked}\`
+              Language: \`${userLanguage}\`
+              Recent Game Type: \`${mostRecentGameType}\`
+              Social Media: \`${formatSocialMediaLinks(socialMediaLinks)}\`
+              `,
             },
             {
-              name: "**First Login**",
-              value: `\`\`\`${firstLogin}\`\`\``,
+              name: "**Stats**",
+              value: `
+              **Skywars**
+              Souls: \`${souls}\`
+              Level: \`${level}\`
+              Games Played: \`${gamesPlayed}\`
+              Coins: \`${coins}\`
+              Kills: \`${kills}\`
+              Deaths: \`${deaths}\`
+              Wins: \`${wins}\`
+              Losses: \`${losses}\`
+              Win Streak: \`${winStreak}\`
+              `,
+              inline: true,
             },
             {
-              name: "**Last Login**",
-              value: `\`\`\`${lastLogin}\`\`\``,
+              name: "**Bedwars**",
+              value: `
+              Level: \`${bedwarsLevel}\`
+              Games Played: \`${bwgamesPlayed}\`
+              Coins: \`${bedwarsCoins}\`
+              Kills: \`${bwkills}\`
+              Deaths: \`${bwdeath}\`
+              Wins: \`${bwwins}\`
+              Losses: \`${bwlosses}\`
+              Win Streak: \`${bwwinstreak}\`
+              `,
+              inline: true,
             },
             {
-              name: "**Language**",
-              value: `\`\`\`${userLanguage}\`\`\``,
+              name: "**Skyblock**",
+              value: `
+              Profiles: \`${skyblockProfiles}\`
+              `,
+              inline: true,
             },
             {
-              name: "**Skyblock Profiles**",
-              value: `\`\`\`${skyblockProfiles.join(", ")}\`\`\``,
-            },
-            {
-              name: "**Achievement Points**",
-              value: `\`\`\`${achievementPoints}\`\`\``,
-            },
-            {
-              name: "**Karma**",
-              value: `\`\`\`${karma}\`\`\``,
-            },
-            {
-              name: "**Social Media**",
-              value: `\`\`\`${formatSocialMediaLinks(socialMediaLinks)}\`\`\``,
-            },
-            {
-              name: "**Hypixel Level**",
-              value: `\`\`\`${hypixelLevel}\`\`\``,
-            },
-            {
-              name: "**Rank**",
-              value: `\`\`\`${rank}\`\`\``,
-            },
-            {
-              name: "**Current Pet**",
-              value: `\`\`\`${currentPet}\`\`\``,
-            },
-            {
-              name: "**Most Recent Game Type**",
-              value: `\`\`\`${mostRecentGameType}\`\`\``,
+              name: "**Dates**",
+              value: `
+              First Login: \`${firstLogin}\`
+              Last Login: \`${lastLogin}\`
+              Last Logout: \`${lastLogout}\`
+              `,
+              inline: true,
             }
           )
           .setThumbnail(
             `https://crafatar.com/renders/body/${uuid}?overlay=true`
           )
-          .setFooter({ text: "Hypixel Player Profile" });
-
-        playerProfileCache[username] = {
-          embed, // The profile embed
-          timestamp: Date.now() + 2 * 60 * 1000, // 2 minutes expiration time
-        };
+          .setFooter({ text: "Hypixel Player Profile - Minecraft Utilities" });
 
         interaction.editReply({
           components: [
